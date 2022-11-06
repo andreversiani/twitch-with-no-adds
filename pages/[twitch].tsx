@@ -16,7 +16,7 @@ export default function Twitch() {
     <>
         <div style={{display: 'flex', alignItems: 'space-between', justifyContent: 'center'}}>
           <div style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            <TwitchPlayer channel={channelName as string} />
+            <TwitchPlayer width={'100%'} height={'100%'} channel={channelName as string} />
           </div>
           <TwitchChat style={{height: '100vh'}} channel={channelName as string} />
         </div>
