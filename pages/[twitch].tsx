@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import axios from "axios"
 import { CREDENTIAL } from "../credentials"
-import { PrimarySearchAppBar } from './navbar'
+import PrimarySearchAppBar from './navbar'
 
 const getCookie = (cookie: string, parameter: string) => {
   return cookie.split(parameter + '=')[1].split(';')[0]

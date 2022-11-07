@@ -57,7 +57,7 @@ const StyledTypograph = styled(Typography)`
   }
 `
 
-export function PrimarySearchAppBar( { username }:{ username: string | undefined } ) {
+export default function PrimarySearchAppBar( { username }:{ username: string | undefined } ) {
   const router = useRouter();
   const [textInput, setTextInput] = useState<string>('');
 
