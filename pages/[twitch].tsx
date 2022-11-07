@@ -6,7 +6,7 @@ import { CREDENTIAL } from "../credentials"
 import PrimarySearchAppBar from './navbar'
 
 const getCookie = (cookie: string, parameter: string) => {
-  return cookie.split(parameter + '=')[1].split(';')[0]
+  return cookie?.split(parameter + '=')[1].split(';')[0]
 }
 
 interface UserInfo {
@@ -43,7 +43,7 @@ export default function Twitch() {
 
   useEffect(() => {
     if (router.asPath.includes('access_token=')) {
-      const token  = router.asPath.split('access_token=')[1]?.split('&')[0]
+      const token  = router.asPath?.split('access_token=')[1]?.split('&')[0]
       if (token) {
         document.cookie = 'access_token=' + token + ';'
       }
