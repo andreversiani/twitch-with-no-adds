@@ -5,7 +5,9 @@ import axios from "axios"
 import PrimarySearchAppBar from '../components/navbar'
 import Card from '../components/card'
 import { Typography } from "@mui/material"
-import { AlignFlexContainer, CentralizedFlexContainer } from "../components/styles"
+import { AlignFlexContainer } from "../components/styles"
+import Header from "../components/head"
+
 
 const getCookie = (cookie: string, parameter: string) => {
   return cookie?.split(parameter + '=')[1]?.split(';')[0]
@@ -90,6 +92,7 @@ export default function Twitch() {
 
   return (
     <div style={{ height: '95vh'}}>
+      <Header channelName={channelName as string} following={following[0]?.user_name}/>
       <PrimarySearchAppBar username={userInfo?.login}/>
       <div style={{display: 'flex', height: '100%'}}>
       {    
