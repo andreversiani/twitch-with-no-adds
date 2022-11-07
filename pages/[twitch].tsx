@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import axios from "axios"
 import { CREDENTIAL } from "../credentials"
+import { PrimarySearchAppBar } from './navbar'
 
 const getCookie = (cookie: string, parameter: string) => {
   return cookie.split(parameter + '=')[1].split(';')[0]
@@ -17,7 +18,20 @@ interface UserInfo {
 }
 
 interface Following {
+  game_id: string
+  game_name: string
+  id: string
+  is_mature: boolean
+  language: string
+  started_at: string
+  tag_ids: string[]
+  thumbnail_url: string
+  title: string
+  type: string
+  user_id: string
   user_login: string
+  user_name: string
+  viewer_count: string
 }
 
 export default function Twitch() {
@@ -26,10 +40,6 @@ export default function Twitch() {
   const [userInfo, setUserInfo] = useState<UserInfo>();
   const [following, setFollowing] = useState<Following[]>([])
   const channelName = router?.query?.twitch;
-
-  const handleSearch = () => {
-    router.push(input)
-  }
 
   useEffect(() => {
     if (router.asPath.includes('access_token=')) {
@@ -77,30 +87,25 @@ export default function Twitch() {
     }
   }, [userInfo])
 
-  const handleFetch = () => {
-    location.href = `https://id.twitch.tv/oauth2/authorize?scope=channel%3Amanage%3Apolls+channel%3Aread%3Apolls+user%3Aread%3Afollows&response_type=token&client_id=${CREDENTIAL.client_id}&redirect_uri=${CREDENTIAL.redirect_uri}`
-  }   
-
-  console.log(following)
-
   return (
-    <>  
+    <div style={{ height: '95vh' }}>
+      <PrimarySearchAppBar username={userInfo?.login}/>
     {
       channelName ?
-        <div style={{height: '100vh'}}>
-          <TwitchEmbed width={'100%'} height={'100%'} channel={channelName as string} />
-        </div>
+        <>      
+            <div style={{height: '100%'}}>
+              <TwitchEmbed width={'100%'} height={'100%'} channel={channelName as string} />
+            </div>
+        </>
         :
-        <div>
-          <button onClick={handleFetch}>CLICK</button>
-        </div>
+        null
         }
       {
         following &&
         following.map(person => {
-          return <div onClick={() => router.push(person.user_login)} key={person.user_login}>{person.user_login}</div>
+          return <ul onClick={() => router.push(person.user_name)} key={person.id}>{person.user_login}</ul>
         })
       }
-    </>
+    </div>
   )
 }
