@@ -5,6 +5,7 @@ import axios from "axios"
 import PrimarySearchAppBar from '../components/navbar'
 import Card from '../components/card'
 import { Typography } from "@mui/material"
+import { AlignFlexContainer, CentralizedFlexContainer } from "../components/styles"
 
 const getCookie = (cookie: string, parameter: string) => {
   return cookie?.split(parameter + '=')[1]?.split(';')[0]
@@ -37,7 +38,6 @@ interface Following {
 
 export default function Twitch() {
   const router = useRouter();
-  const [input, setInput] = useState('');
   const [userInfo, setUserInfo] = useState<UserInfo>();
   const [following, setFollowing] = useState<Following[]>([])
   const channelName = router?.query?.twitch;
@@ -89,21 +89,23 @@ export default function Twitch() {
   }, [userInfo])
 
   return (
-    <div style={{ height: '90vh'}}>
+    <div style={{ height: '95vh'}}>
       <PrimarySearchAppBar username={userInfo?.login}/>
       {    
         following.length ?
           <div style={{height: '100%', display: 'flex'}}>
-            <div style={{display: 'flex', flexDirection: 'column', maxWidth: '12vw'}}>
-              <Typography
-                variant='h2'
-                noWrap
-                fontSize='13px'
-                fontWeight='bold'
-                style={{padding: '1rem 0 0.5rem 0.75rem'}}
-              > 
-                Following
-                </Typography>
+            <div style={{display: 'flex', flexDirection: 'column', maxWidth: '12vw', height: '100vh', overflow: 'auto'}}>
+              <AlignFlexContainer>
+                <Typography
+                  variant='h2'
+                  noWrap
+                  fontSize='13px'
+                  fontWeight='bold'
+                  style={{padding: '1rem 0 0.5rem 0.75rem'}}
+                > 
+                  Following
+                  </Typography>
+              </AlignFlexContainer>
               {
                 following.map(person => {
                   return (
@@ -117,13 +119,11 @@ export default function Twitch() {
                 })
               }
           </div>
-          
-          <TwitchEmbed width={'100%'} height={'100%'} channel={channelName as string || following[0]?.user_name || 'gaules'} />
         </div>
         :
         null
       }
-      
+      <TwitchEmbed width={'100%'} height={'100%'} channel={channelName as string || following[0]?.user_name || 'gaules'} />
     </div>
   )
 }
