@@ -91,10 +91,11 @@ export default function Twitch() {
   return (
     <div style={{ height: '95vh'}}>
       <PrimarySearchAppBar username={userInfo?.login}/>
+      <div style={{display: 'flex', height: '100%'}}>
       {    
         following.length ?
           <div style={{height: '100%', display: 'flex'}}>
-            <div style={{display: 'flex', flexDirection: 'column', maxWidth: '12vw', height: '100vh', overflow: 'auto'}}>
+            <div style={{display: 'flex', flexDirection: 'column', maxWidth: '12vw', height: '100%', overflow: 'auto'}}>
               <AlignFlexContainer>
                 <Typography
                   variant='h2'
@@ -124,6 +125,7 @@ export default function Twitch() {
         null
       }
       <TwitchEmbed width={'100%'} height={'100%'} channel={channelName as string || following[0]?.user_name || 'gaules'} />
+      </div>
     </div>
   )
 }
