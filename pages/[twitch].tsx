@@ -2,7 +2,9 @@ import { TwitchEmbed } from "react-twitch-embed"
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import axios from "axios"
-import PrimarySearchAppBar from './navbar'
+import PrimarySearchAppBar from '../components/navbar'
+import Card from '../components/card'
+import { Typography } from "@mui/material"
 
 const getCookie = (cookie: string, parameter: string) => {
   return cookie?.split(parameter + '=')[1]?.split(';')[0]
@@ -30,7 +32,7 @@ interface Following {
   user_id: string
   user_login: string
   user_name: string
-  viewer_count: string
+  viewer_count: number
 }
 
 export default function Twitch() {
@@ -87,24 +89,41 @@ export default function Twitch() {
   }, [userInfo])
 
   return (
-    <div style={{ height: '95vh' }}>
+    <div style={{ height: '90vh'}}>
       <PrimarySearchAppBar username={userInfo?.login}/>
-    {
-      channelName ?
-        <>      
-            <div style={{height: '100%'}}>
-              <TwitchEmbed width={'100%'} height={'100%'} channel={channelName as string} />
-            </div>
-        </>
+      {    
+        following.length ?
+          <div style={{height: '100%', display: 'flex'}}>
+            <div style={{display: 'flex', flexDirection: 'column', maxWidth: '12vw'}}>
+              <Typography
+                variant='h2'
+                noWrap
+                fontSize='13px'
+                fontWeight='bold'
+                style={{padding: '1rem 0 0.5rem 0.75rem'}}
+              > 
+                Following
+                </Typography>
+              {
+                following.map(person => {
+                  return (
+                  <Card 
+                    streamerName={person.user_name} 
+                    viewerCount={person.viewer_count} 
+                    gameName={person.game_name} 
+                    key={person.id} 
+                    />
+                    )
+                })
+              }
+          </div>
+          
+          <TwitchEmbed width={'100%'} height={'100%'} channel={channelName as string || following[0]?.user_name || 'gaules'} />
+        </div>
         :
         null
-        }
-      {
-        following &&
-        following.map(person => {
-          return <ul onClick={() => router.push(person.user_name)} key={person.id}>{person.user_login}</ul>
-        })
       }
+      
     </div>
   )
 }
