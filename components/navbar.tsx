@@ -10,6 +10,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useRouter } from 'next/router';
 import { FormEvent, useState } from 'react';
 import { CREDENTIAL } from '../credentials';
+import { Skeleton } from '@mui/material';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -56,13 +57,13 @@ const StyledTypograph = styled(Typography)`
   }
 `
 
-export default function PrimarySearchAppBar( { username }:{ username: string | undefined } ) {
+export default function PrimarySearchAppBar( { username, loading }:{ username: string | undefined, loading: boolean } ) {
   const router = useRouter();
   const [textInput, setTextInput] = useState<string>('');
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push('/' + textInput);
+    router.push(textInput);
   }
 
   const handleClick = (event: any, header?: string) => {
@@ -110,7 +111,7 @@ export default function PrimarySearchAppBar( { username }:{ username: string | u
             sx={{ display: { xs: 'none', sm: 'block' } }}
             onClick={handleClick}
           >
-            {username || 'Login'}
+            {loading ? <Skeleton animation='wave' /> : username || 'Login'}
           </StyledTypograph>
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton

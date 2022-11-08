@@ -1,47 +1,24 @@
 import { TwitchEmbed } from "react-twitch-embed"
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
-import axios from "axios"
 import PrimarySearchAppBar from '../components/navbar'
 import Card from '../components/card'
-import { Typography } from "@mui/material"
-import { AlignFlexContainer } from "../components/styles"
+import { Skeleton, Typography } from "@mui/material"
+import { AlignFlexContainer, FlexColumn } from "../components/styles"
 import Header from "../components/head"
-
+import { UserInfo, StreamingChannel } from '../types/types'
+import { API } from "./api/api"
 
 const getCookie = (cookie: string, parameter: string) => {
   return cookie?.split(parameter + '=')[1]?.split(';')[0]
 }
 
-interface UserInfo {
-  client_id: string
-  login: string
-  user_id: string
-  expires_in: number
-  access_token: string
-}
-
-interface Following {
-  game_id: string
-  game_name: string
-  id: string
-  is_mature: boolean
-  language: string
-  started_at: string
-  tag_ids: string[]
-  thumbnail_url: string
-  title: string
-  type: string
-  user_id: string
-  user_login: string
-  user_name: string
-  viewer_count: number
-}
-
 export default function Twitch() {
-  const router = useRouter();
   const [userInfo, setUserInfo] = useState<UserInfo>();
-  const [following, setFollowing] = useState<Following[]>([])
+  const [following, setFollowing] = useState<StreamingChannel[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const api = new API()
+  const router = useRouter();
   const channelName = router?.query?.twitch;
 
   useEffect(() => {
@@ -55,50 +32,40 @@ export default function Twitch() {
 
   useEffect(() => {
     if (getCookie(document.cookie, 'access_token')) {
-      const access_token = getCookie(document.cookie, 'access_token')
-      axios({
-        method: 'get',
-        url: 'https://id.twitch.tv/oauth2/validate',
-        headers: {
-          'Authorization': 'OAuth ' +  access_token
-        }
-      }).then(({ data }) => {
-        setUserInfo({
-          access_token: access_token,
-          client_id: data.client_id,
-          login: data.login,
-          user_id: data.user_id,
-          expires_in: data.expires_in
+      const access_token = getCookie(document.cookie, 'access_token');
+      setLoading(true);
+      api.validateToken(access_token)
+        .then(({ data }) => {
+          setUserInfo({...data, access_token: access_token})
+          document.cookie = `client_id=${data.client_id}`
+          document.cookie = `login=${data.login}`
+          document.cookie = `client_id=${data.user_id}`
+          document.cookie = `client_id=${data.expires_in}`
+          setLoading(false);
         })
-      })
     }
-  }, [])
+  }, [document.cookie])
 
   useEffect(() => {
     if (userInfo?.access_token) {
-      axios({
-        method: 'get',
-        url: `https://api.twitch.tv/helix/streams/followed?user_id=${userInfo.user_id}`,
-        headers: {
-          'Authorization': 'Bearer ' + userInfo.access_token,
-          'Client-Id': userInfo.client_id
-        }
-      }).then((response) => {
+      setLoading(true);
+      api.getStreamers(userInfo).then((response) => {
         const { data } = response.data
         setFollowing(data);
+        setLoading(false);
       })
     }
   }, [userInfo])
 
   return (
-    <div style={{ height: '95vh'}}>
+    <div style={{ height: '92.3354vh'}}>
       <Header channelName={channelName as string} following={following[0]?.user_name}/>
-      <PrimarySearchAppBar username={userInfo?.login}/>
+      <PrimarySearchAppBar loading={loading} username={userInfo?.login}/>
       <div style={{display: 'flex', height: '100%'}}>
       {    
         following.length ?
-          <div style={{height: '100%', display: 'flex'}}>
-            <div style={{display: 'flex', flexDirection: 'column', maxWidth: '12vw', height: '100%', overflow: 'auto'}}>
+          <div style={{height: '100%', display: 'flex', maxWidth: '12vw'}}>
+            <FlexColumn style={{height: '100%', overflow: 'auto'}}>
               <AlignFlexContainer>
                 <Typography
                   variant='h2'
@@ -110,7 +77,11 @@ export default function Twitch() {
                   Following
                   </Typography>
               </AlignFlexContainer>
-              {
+              { loading ?
+                [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(index => {
+                  return <Skeleton key={index} width={250} height={50} animation='wave' />
+                }) 
+                :
                 following.map(person => {
                   return (
                   <Card 
@@ -122,12 +93,16 @@ export default function Twitch() {
                     )
                 })
               }
-          </div>
+            </FlexColumn>
         </div>
         :
         null
       }
-      <TwitchEmbed width={'100%'} height={'100%'} channel={channelName as string || following[0]?.user_name || 'gaules'} />
+      <TwitchEmbed 
+        width={'100%'} 
+        height={'100%'} 
+        channel={channelName as string || following[0]?.user_name || 'gaules'} 
+      />
       </div>
     </div>
   )

@@ -2,7 +2,6 @@ import { useRouter } from "next/router";
 import { CardContainer, CentralizedFlexContainer, FlexColumn } from "./styles";
 import Typography from '@mui/material/Typography';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { createTheme } from '@mui/material/styles';
 
 export default function Card({ streamerName, gameName, viewerCount }: { streamerName: string, gameName: string, viewerCount: number }) {
   
